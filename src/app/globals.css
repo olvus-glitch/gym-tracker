@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8f7fc;
+  --foreground: #1a1033;
+  --primary: #7c3aed;
+  --primary-dark: #6d28d9;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --card-bg: #ffffff;
+  --border: #e5e1f0;
+  --text-muted: #8b82a8;
+  --input-bg: #faf9fe;
+  --hover-bg: #f3f0fa;
+  --surface: #ffffff;
+  --text: #1a1033;
+}
+
+.dark {
+  --background: #0c0a14;
+  --foreground: #e8e4f0;
+  --primary: #a78bfa;
+  --primary-dark: #8b5cf6;
+  --accent: #fbbf24;
+  --danger: #f87171;
+  --success: #4ade80;
+  --card-bg: #16132a;
+  --border: #2d2848;
+  --text-muted: #8b82a8;
+  --input-bg: #1c1836;
+  --hover-bg: #221e3a;
+  --surface: #16132a;
+  --text: #e8e4f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-card-bg: var(--card-bg);
+  --color-border: var(--border);
+  --color-text-muted: var(--text-muted);
+  --color-input-bg: var(--input-bg);
+  --color-hover-bg: var(--hover-bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
