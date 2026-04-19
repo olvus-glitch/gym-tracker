@@ -127,6 +127,7 @@ export default function ProgresoPage() {
     const sessSemana = sesiones.filter(
       (s) => s.semanaISO === semanaActual && s.anioISO === anioActual
     );
+    const diasCompletados = sessSemana.filter((s) => s.completada).length;
     const totalEjercicios = sessSemana.reduce((acc, s) => acc + s.ejercicios.length, 0);
     const totalSeries = sessSemana.reduce(
       (acc, s) => acc + s.ejercicios.reduce((a, e) => a + e.series, 0),
@@ -137,7 +138,7 @@ export default function ProgresoPage() {
         acc + s.ejercicios.reduce((a, e) => a + e.series * e.repeticiones * (e.peso || 0), 0),
       0
     );
-    return { dias: sessSemana.length, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
+    return { dias: diasCompletados, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
   }, [sesiones, semanaActual, anioActual]);
 
   // Resumen semana anterior (para comparacion)
@@ -147,6 +148,7 @@ export default function ProgresoPage() {
     const sessSemana = sesiones.filter(
       (s) => s.semanaISO === semanaAnterior && s.anioISO === anioAnterior
     );
+    const diasCompletados = sessSemana.filter((s) => s.completada).length;
     const totalEjercicios = sessSemana.reduce((acc, s) => acc + s.ejercicios.length, 0);
     const totalSeries = sessSemana.reduce(
       (acc, s) => acc + s.ejercicios.reduce((a, e) => a + e.series, 0),
@@ -157,7 +159,7 @@ export default function ProgresoPage() {
         acc + s.ejercicios.reduce((a, e) => a + e.series * e.repeticiones * (e.peso || 0), 0),
       0
     );
-    return { dias: sessSemana.length, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
+    return { dias: diasCompletados, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
   }, [sesiones, semanaActual, anioActual]);
 
   // Resumen mensual
@@ -187,7 +189,8 @@ export default function ProgresoPage() {
       ejercicios: data.ejercicios,
       volumen: Math.round(data.volumen),
     }));
-    return { dias: sessMes.length, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal), barras };
+    const diasCompletados = sessMes.filter((s) => s.completada).length;
+    return { dias: diasCompletados, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal), barras };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sesiones, mesActual]);
 
@@ -209,7 +212,7 @@ export default function ProgresoPage() {
         acc + s.ejercicios.reduce((a, e) => a + e.series * e.repeticiones * (e.peso || 0), 0),
       0
     );
-    return { dias: sessMes.length, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
+    return { dias: sessMes.filter((s) => s.completada).length, ejercicios: totalEjercicios, series: totalSeries, volumen: Math.round(volumenTotal) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sesiones, mesActual]);
 

@@ -5,7 +5,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'gym-tracker-secret-key-change-in-production-2024'
 );
 
-const PUBLIC_PATHS = ['/login', '/compartido', '/api/auth', '/api/debug'];
+const PUBLIC_PATHS = ['/login', '/compartido', '/api/auth'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
