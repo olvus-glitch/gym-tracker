@@ -103,6 +103,32 @@ export function crearPlantillasPredefinidas(): Plantilla[] {
         5: [...PIERNA_EJERCICIOS, ...ABDOMEN_EJERCICIOS],
       },
     },
+    {
+      id: 'split-pecho-vacio',
+      nombre: 'Split 1 — Pecho (sin pesos)',
+      descripcion: 'Mismo split de Pecho pero sin pesos pre-cargados',
+      esPredefinida: true,
+      dias: {
+        1: [...PECHO_EJERCICIOS, ...HOMBROS_EJERCICIOS, ...TRICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        2: [...PIERNA_EJERCICIOS, ...ABDOMEN_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        3: [...ESPALDA_COMPLETA, ...BICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        4: [...PECHO_EJERCICIOS, ...HOMBROS_EJERCICIOS, ...TRICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        5: [...PIERNA_EJERCICIOS, ...ABDOMEN_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+      },
+    },
+    {
+      id: 'split-espalda-vacio',
+      nombre: 'Split 2 — Espalda (sin pesos)',
+      descripcion: 'Mismo split de Espalda pero sin pesos pre-cargados',
+      esPredefinida: true,
+      dias: {
+        1: [...ESPALDA_AMPLITUD, ...BICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        2: [...PIERNA_EJERCICIOS, ...ABDOMEN_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        3: [...PECHO_EJERCICIOS, ...HOMBROS_EJERCICIOS, ...TRICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        4: [...ESPALDA_DENSIDAD, ...BICEPS_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+        5: [...PIERNA_EJERCICIOS, ...ABDOMEN_EJERCICIOS].map(e => ({ ...e, peso: undefined })),
+      },
+    },
   ];
 }
 
