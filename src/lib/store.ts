@@ -282,7 +282,11 @@ export function useSesiones() {
           completada: false,
         };
       }
-      const nuevoEj: Ejercicio = { ...ejercicio, id: uuidv4() };
+      const nuevoEj: Ejercicio = {
+        ...ejercicio,
+        id: uuidv4(),
+        realizado: ejercicio.realizado ?? false,
+      };
       const actualizada = {
         ...sesion,
         ejercicios: [...sesion.ejercicios, nuevoEj],
@@ -345,6 +349,7 @@ export function useSesiones() {
             ejercicios: ejerciciosPlantilla.map((ep) => ({
               ...ep,
               id: uuidv4(),
+              realizado: ep.realizado ?? false,
             })),
             completada: false,
           });

@@ -7,6 +7,11 @@ export interface Ejercicio {
   peso?: number;
   unidad: 'kg' | 'lbs';
   notas?: string;
+  realizado?: boolean;
+  maquinaCardio?: string;
+  distanciaKm?: number;
+  calorias?: number;
+  tiempoMin?: number;
 }
 
 export type GrupoMuscular =
@@ -17,6 +22,7 @@ export type GrupoMuscular =
   | 'Pecho'
   | 'Hombros'
   | 'Tríceps'
+  | 'Cardio'
   | 'Otro';
 
 export const GRUPOS_MUSCULARES: GrupoMuscular[] = [
@@ -27,6 +33,7 @@ export const GRUPOS_MUSCULARES: GrupoMuscular[] = [
   'Pecho',
   'Hombros',
   'Tríceps',
+  'Cardio',
   'Otro',
 ];
 

@@ -5,6 +5,7 @@ interface EjercicioCardProps {
   esPR?: boolean;
   onEditar: (ejercicio: Ejercicio) => void;
   onEliminar: (id: string) => void;
+  onToggleRealizado?: (ejercicio: Ejercicio) => void;
 }
 
 const COLORES_GRUPO: Record<string, string> = {
@@ -15,6 +16,7 @@ const COLORES_GRUPO: Record<string, string> = {
   Pecho: 'border-l-red-500',
   Hombros: 'border-l-yellow-500',
   Tríceps: 'border-l-purple-500',
+  Cardio: 'border-l-cyan-500',
   Otro: 'border-l-gray-500',
 };
 
@@ -23,15 +25,19 @@ export default function EjercicioCard({
   esPR,
   onEditar,
   onEliminar,
+  onToggleRealizado,
 }: EjercicioCardProps) {
   const colorBorde = COLORES_GRUPO[ejercicio.grupoMuscular] || 'border-l-gray-400';
-  const pesoTexto = ejercicio.peso
-    ? `${ejercicio.peso}${ejercicio.unidad}`
-    : '';
+  const esCardio = ejercicio.grupoMuscular === 'Cardio';
+  const principal = esCardio
+    ? `${ejercicio.maquinaCardio || 'Cardio'} • ${ejercicio.distanciaKm ?? 0} km • ${ejercicio.calorias ?? 0} kcal • ${ejercicio.tiempoMin ?? 0} min`
+    : `${ejercicio.series}x${ejercicio.repeticiones}${ejercicio.peso ? ` • ${ejercicio.peso}${ejercicio.unidad}` : ''}`;
 
   return (
     <div
-      className={`bg-card-bg rounded-lg shadow-sm border border-border border-l-4 ${colorBorde} p-4 flex items-center justify-between gap-3`}
+      className={`bg-card-bg rounded-lg shadow-sm border border-border border-l-4 ${colorBorde} p-4 flex items-center justify-between gap-3 ${
+        ejercicio.realizado ? 'ring-1 ring-emerald-500/40 bg-emerald-500/5' : ''
+      }`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
@@ -47,10 +53,7 @@ export default function EjercicioCard({
             </span>
           )}
         </div>
-        <p className="text-xs text-text-muted mt-0.5">
-          {ejercicio.series}x{ejercicio.repeticiones}
-          {pesoTexto && ` • ${pesoTexto}`}
-        </p>
+        <p className="text-xs text-text-muted mt-0.5">{principal}</p>
         {ejercicio.notas && (
           <p className="text-xs text-text-muted/70 italic mt-0.5 truncate">
             {ejercicio.notas}
@@ -58,6 +61,20 @@ export default function EjercicioCard({
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
+        {onToggleRealizado && (
+          <button
+            onClick={() => onToggleRealizado(ejercicio)}
+            className={`px-2 py-1 rounded-md text-[11px] font-semibold border transition-colors ${
+              ejercicio.realizado
+                ? 'bg-emerald-500/15 text-emerald-600 border-emerald-500/40'
+                : 'bg-card-bg text-text-muted border-border hover:bg-hover-bg'
+            }`}
+            aria-label="Marcar ejercicio realizado"
+            title="Checklist del ejercicio"
+          >
+            {ejercicio.realizado ? 'Hecho' : 'Pendiente'}
+          </button>
+        )}
         <button
           onClick={() => onEditar(ejercicio)}
           className="w-8 h-8 rounded-md flex items-center justify-center text-accent hover:bg-accent/10 transition-colors"

@@ -18,6 +18,7 @@ const ejercicioVacio: EjercicioPlantilla = {
   series: 4,
   repeticiones: 10,
   unidad: 'kg',
+  realizado: false,
 };
 
 export default function PlantillaEditor({
@@ -41,7 +42,7 @@ export default function PlantillaEditor({
     });
   };
 
-  const actualizarEjercicio = (idx: number, campo: string, valor: string | number) => {
+  const actualizarEjercicio = (idx: number, campo: string, valor: string | number | undefined) => {
     const nuevos = [...ejerciciosDia];
     nuevos[idx] = { ...nuevos[idx], [campo]: valor };
     setDias({ ...dias, [diaActivo]: nuevos });
@@ -165,50 +166,95 @@ export default function PlantillaEditor({
                     ))}
                   </select>
 
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      value={ej.series}
-                      onChange={(e) => actualizarEjercicio(idx, 'series', Number(e.target.value))}
-                      className="w-10 px-1 py-1 rounded border border-border text-[11px] text-center"
-                      min={1}
-                    />
-                    <span className="text-[10px] text-text-muted">×</span>
-                    <input
-                      type="number"
-                      value={ej.repeticiones}
-                      onChange={(e) => actualizarEjercicio(idx, 'repeticiones', Number(e.target.value))}
-                      className="w-10 px-1 py-1 rounded border border-border text-[11px] text-center"
-                      min={1}
-                    />
-                  </div>
+                  {ej.grupoMuscular !== 'Cardio' ? (
+                    <>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={ej.series}
+                          onChange={(e) => actualizarEjercicio(idx, 'series', Number(e.target.value))}
+                          className="w-10 px-1 py-1 rounded border border-border text-[11px] text-center"
+                          min={1}
+                        />
+                        <span className="text-[10px] text-text-muted">×</span>
+                        <input
+                          type="number"
+                          value={ej.repeticiones}
+                          onChange={(e) => actualizarEjercicio(idx, 'repeticiones', Number(e.target.value))}
+                          className="w-10 px-1 py-1 rounded border border-border text-[11px] text-center"
+                          min={1}
+                        />
+                      </div>
 
-                  <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={ej.peso ?? ''}
+                          onChange={(e) =>
+                            actualizarEjercicio(
+                              idx,
+                              'peso',
+                              e.target.value ? Number(e.target.value) : undefined
+                            )
+                          }
+                          placeholder="Peso"
+                          className="w-14 px-1 py-1 rounded border border-border text-[11px] text-center"
+                          min={0}
+                          step={0.5}
+                        />
+                        <select
+                          value={ej.unidad}
+                          onChange={(e) => actualizarEjercicio(idx, 'unidad', e.target.value)}
+                          className="px-1 py-1 rounded border border-border text-[10px] bg-card-bg"
+                        >
+                          <option value="kg">kg</option>
+                          <option value="lbs">lbs</option>
+                        </select>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-[10px] px-2 py-1 rounded bg-cyan-500/10 text-cyan-600 border border-cyan-500/30">
+                      Modo cardio
+                    </span>
+                  )}
+                </div>
+
+                {ej.grupoMuscular === 'Cardio' && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      value={ej.maquinaCardio || ''}
+                      onChange={(e) => actualizarEjercicio(idx, 'maquinaCardio', e.target.value)}
+                      placeholder="Maquina"
+                      className="px-2 py-1 rounded border border-border text-[11px]"
+                    />
                     <input
                       type="number"
-                      value={ej.peso ?? ''}
-                      onChange={(e) =>
-                        actualizarEjercicio(
-                          idx,
-                          'peso',
-                          e.target.value ? Number(e.target.value) : 0
-                        )
-                      }
-                      placeholder="Peso"
-                      className="w-14 px-1 py-1 rounded border border-border text-[11px] text-center"
+                      value={ej.distanciaKm ?? ''}
+                      onChange={(e) => actualizarEjercicio(idx, 'distanciaKm', e.target.value ? Number(e.target.value) : undefined)}
+                      placeholder="Km"
                       min={0}
-                      step={0.5}
+                      step={0.01}
+                      className="px-2 py-1 rounded border border-border text-[11px]"
                     />
-                    <select
-                      value={ej.unidad}
-                      onChange={(e) => actualizarEjercicio(idx, 'unidad', e.target.value)}
-                      className="px-1 py-1 rounded border border-border text-[10px] bg-card-bg"
-                    >
-                      <option value="kg">kg</option>
-                      <option value="lbs">lbs</option>
-                    </select>
+                    <input
+                      type="number"
+                      value={ej.calorias ?? ''}
+                      onChange={(e) => actualizarEjercicio(idx, 'calorias', e.target.value ? Number(e.target.value) : undefined)}
+                      placeholder="Calorias"
+                      min={0}
+                      className="px-2 py-1 rounded border border-border text-[11px]"
+                    />
+                    <input
+                      type="number"
+                      value={ej.tiempoMin ?? ''}
+                      onChange={(e) => actualizarEjercicio(idx, 'tiempoMin', e.target.value ? Number(e.target.value) : undefined)}
+                      placeholder="Minutos"
+                      min={0}
+                      className="px-2 py-1 rounded border border-border text-[11px]"
+                    />
                   </div>
-                </div>
+                )}
               </div>
             ))}
 

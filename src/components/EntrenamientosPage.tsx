@@ -118,6 +118,13 @@ export default function EntrenamientosPage() {
     }
   };
 
+  const handleToggleRealizado = (ejercicio: Ejercicio) => {
+    editarEjercicio(fechaActual, {
+      ...ejercicio,
+      realizado: !ejercicio.realizado,
+    });
+  };
+
   const handleCompartir = () => {
     setMostrarCompartir(true);
   };
@@ -168,6 +175,7 @@ export default function EntrenamientosPage() {
                       esPR={esRecordPersonal(ej)}
                       onEditar={handleEditar}
                       onEliminar={handleEliminar}
+                      onToggleRealizado={handleToggleRealizado}
                     />
                     {confirmEliminar === ej.id && (
                       <div className="absolute inset-0 bg-danger/95 rounded-lg flex items-center justify-center gap-3 text-white text-sm font-medium">
