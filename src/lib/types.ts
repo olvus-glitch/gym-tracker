@@ -79,6 +79,54 @@ export interface RegistroPeso {
   unidad: 'kg' | 'lbs';
 }
 
+export type CardioType =
+  | 'caminar'
+  | 'correr'
+  | 'bici'
+  | 'hiit'
+  | 'remo'
+  | 'eliptica'
+  | 'otro';
+
+export type CardioIntensity = 'baja' | 'media' | 'alta';
+
+export interface CardioSession {
+  id: string;
+  date: string;
+  type: CardioType;
+  machine?: string;
+  duration: number;
+  distance: number;
+  calories: number;
+  intensity: CardioIntensity;
+}
+
+export interface SleepLog {
+  id: string;
+  date: string;
+  hours: number;
+  quality: 1 | 2 | 3 | 4 | 5;
+  notes?: string;
+}
+
+export interface WeightLog {
+  id: string;
+  date: string;
+  weight: number;
+}
+
+export interface WeeklyAnalytics {
+  weekKey: string;
+  totalVolume: number;
+  avgStrength: number;
+  totalCardioMinutes: number;
+  totalCardioCalories: number;
+  avgSleepHours: number;
+  avgSleepQuality: number;
+  currentWeight?: number;
+  alerts: string[];
+}
+
 export interface RutinaCompartida {
   id: string;
   token: string;

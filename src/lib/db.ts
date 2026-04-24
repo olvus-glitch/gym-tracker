@@ -77,6 +77,29 @@ async function initializeDb(c: Client) {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )`, args: [] },
       { sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_peso_user_fecha ON registros_peso(user_id, fecha)`, args: [] },
+      { sql: `CREATE TABLE IF NOT EXISTS cardio_sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        date TEXT NOT NULL,
+        type TEXT NOT NULL,
+        machine TEXT,
+        duration INTEGER NOT NULL,
+        distance REAL NOT NULL,
+        calories INTEGER NOT NULL,
+        intensity TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )`, args: [] },
+      { sql: `CREATE INDEX IF NOT EXISTS idx_cardio_user_date ON cardio_sessions(user_id, date)`, args: [] },
+      { sql: `CREATE TABLE IF NOT EXISTS sleep_logs (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        date TEXT NOT NULL,
+        hours REAL NOT NULL,
+        quality INTEGER NOT NULL,
+        notes TEXT,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )`, args: [] },
+      { sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_sleep_user_date ON sleep_logs(user_id, date)`, args: [] },
       { sql: `CREATE TABLE IF NOT EXISTS rutinas_compartidas (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,

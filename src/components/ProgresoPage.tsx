@@ -26,6 +26,20 @@ import {
   subDays,
 } from '../lib/fechas';
 import { useTheme } from '../lib/theme-context';
+import { useCardio } from '@/lib/hooks/useCardio';
+import { useSleep } from '@/lib/hooks/useSleep';
+import { useWeightLogs } from '@/lib/hooks/useWeightLogs';
+import {
+  getAnalysisAlerts,
+  getCardioSummary,
+  getSleepAverage,
+  getStrengthProgress,
+  getWeeklyVolume,
+} from '@/lib/services/analyticsService';
+import WeeklyDashboardCards from '@/components/charts/WeeklyDashboardCards';
+import VolumeStrengthChart from '@/components/charts/VolumeStrengthChart';
+import CardioWeightChart from '@/components/charts/CardioWeightChart';
+import SleepForm from '@/components/sleep/SleepForm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomTooltip({ active, payload, label }: any) {
@@ -76,6 +90,9 @@ export default function ProgresoPage() {
 
   const { registros, cargado: cargadoPeso, agregarRegistro } = useRegistrosPeso();
   const { sesiones, cargado: cargadoSesiones } = useSesiones();
+  const { cardio, cargado: cargadoCardio } = useCardio();
+  const { sleepLogs, cargado: cargadoSueno, guardarSueno } = useSleep();
+  const { weightLogs, cargado: cargadoWeight } = useWeightLogs();
 
   const hoy = new Date();
   const semanaActual = obtenerSemanaISO(hoy);
@@ -86,6 +103,100 @@ export default function ProgresoPage() {
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b';
   const primaryColor = theme === 'dark' ? '#818cf8' : '#6c5ce7';
   const secondaryColor = theme === 'dark' ? '#c084fc' : '#a855f7';
+
+  const semanaCardio = useMemo(
+    () => cardio.filter((c) => {
+      const d = new Date(c.date);
+      return obtenerSemanaISO(d) === semanaActual && obtenerAnioISO(d) === anioActual;
+    }),
+    [cardio, semanaActual, anioActual]
+  );
+
+  const semanaSueno = useMemo(
+    () => sleepLogs.filter((s) => {
+      const d = new Date(s.date);
+      return obtenerSemanaISO(d) === semanaActual && obtenerAnioISO(d) === anioActual;
+    }),
+    [sleepLogs, semanaActual, anioActual]
+  );
+
+  const semanaSesiones = useMemo(
+    () => sesiones.filter((s) => s.semanaISO === semanaActual && s.anioISO === anioActual),
+    [sesiones, semanaActual, anioActual]
+  );
+
+  const semanaAnteriorSesiones = useMemo(() => {
+    const semanaAnterior = semanaActual - 1 > 0 ? semanaActual - 1 : 52;
+    const anioAnterior = semanaActual - 1 > 0 ? anioActual : anioActual - 1;
+    return sesiones.filter((s) => s.semanaISO === semanaAnterior && s.anioISO === anioAnterior);
+  }, [sesiones, semanaActual, anioActual]);
+
+  const semanaAnteriorCardio = useMemo(() => {
+    const semanaAnterior = semanaActual - 1 > 0 ? semanaActual - 1 : 52;
+    const anioAnterior = semanaActual - 1 > 0 ? anioActual : anioActual - 1;
+    return cardio.filter((c) => {
+      const d = new Date(c.date);
+      return obtenerSemanaISO(d) === semanaAnterior && obtenerAnioISO(d) === anioAnterior;
+    });
+  }, [cardio, semanaActual, anioActual]);
+
+  const weeklyDashboard = useMemo(() => {
+    const volume = getWeeklyVolume(semanaSesiones);
+    const cardioSummary = getCardioSummary(semanaCardio);
+    const sleepAvg = getSleepAverage(semanaSueno);
+    const currentWeight = weightLogs.length ? weightLogs[weightLogs.length - 1].weight : undefined;
+    return { volume, cardioSummary, sleepAvg, currentWeight };
+  }, [semanaSesiones, semanaCardio, semanaSueno, weightLogs]);
+
+  const analysisAlerts = useMemo(() => {
+    const currentStrength = getStrengthProgress(semanaSesiones).avgLoad;
+    const previousStrength = getStrengthProgress(semanaAnteriorSesiones).avgLoad;
+    const prevWeight = weightLogs.length > 1 ? weightLogs[weightLogs.length - 2].weight : null;
+    const currWeight = weightLogs.length ? weightLogs[weightLogs.length - 1].weight : null;
+    return getAnalysisAlerts(
+      {
+        volume: getWeeklyVolume(semanaSesiones),
+        strength: currentStrength,
+        cardioCalories: getCardioSummary(semanaCardio).calories,
+        weight: currWeight,
+      },
+      {
+        volume: getWeeklyVolume(semanaAnteriorSesiones),
+        strength: previousStrength,
+        cardioCalories: getCardioSummary(semanaAnteriorCardio).calories,
+        weight: prevWeight,
+      }
+    );
+  }, [semanaSesiones, semanaAnteriorSesiones, semanaCardio, semanaAnteriorCardio, weightLogs]);
+
+  const volumenFuerzaData = useMemo(() => {
+    const map = new Map<string, { week: string; volume: number; avgStrength: number }>();
+    for (const s of sesiones) {
+      const key = `${s.anioISO}-S${s.semanaISO}`;
+      const prev = map.get(key) || { week: key, volume: 0, avgStrength: 0 };
+      const vol = s.ejercicios.reduce((a, e) => a + e.series * e.repeticiones * (e.peso || 0), 0);
+      const pesos = s.ejercicios.filter((e) => e.peso && e.peso > 0).map((e) => e.peso as number);
+      const avg = pesos.length ? pesos.reduce((a, b) => a + b, 0) / pesos.length : 0;
+      map.set(key, {
+        week: key,
+        volume: prev.volume + Math.round(vol),
+        avgStrength: Math.round(((prev.avgStrength + avg) / 2) * 10) / 10,
+      });
+    }
+    return Array.from(map.values()).slice(-8);
+  }, [sesiones]);
+
+  const cardioPesoData = useMemo(() => {
+    const cardioByDate = new Map<string, number>();
+    for (const c of cardio) {
+      cardioByDate.set(c.date, (cardioByDate.get(c.date) || 0) + c.calories);
+    }
+    return weightLogs.map((w) => ({
+      date: w.date.slice(5),
+      weight: w.weight,
+      cardioCalories: cardioByDate.get(w.date) || 0,
+    }));
+  }, [weightLogs, cardio]);
 
   // Peso semanal
   const datosPesoSemanal = useMemo(() => {
@@ -327,7 +438,7 @@ export default function ProgresoPage() {
     setPesoInput('');
   };
 
-  if (!cargadoPeso || !cargadoSesiones) {
+  if (!cargadoPeso || !cargadoSesiones || !cargadoCardio || !cargadoSueno || !cargadoWeight) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -340,6 +451,32 @@ export default function ProgresoPage() {
 
   return (
     <div className="space-y-4 mt-4">
+      <WeeklyDashboardCards
+        volumen={weeklyDashboard.volume}
+        cardioMin={weeklyDashboard.cardioSummary.minutes}
+        suenoProm={weeklyDashboard.sleepAvg.hours}
+        pesoActual={weeklyDashboard.currentWeight}
+      />
+
+      <SleepForm
+        date={fechaAString(hoy)}
+        onGuardar={(data) => {
+          guardarSueno(data);
+        }}
+      />
+
+      {analysisAlerts.length > 0 && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 space-y-1">
+          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Alertas de analitica</p>
+          {analysisAlerts.map((a) => (
+            <p key={a} className="text-sm text-foreground">⚠ {a}</p>
+          ))}
+        </div>
+      )}
+
+      {volumenFuerzaData.length > 0 && <VolumeStrengthChart data={volumenFuerzaData} />}
+      {cardioPesoData.length > 0 && <CardioWeightChart data={cardioPesoData} />}
+
       {/* Selector semanal/mensual */}
       <div className="flex rounded-xl overflow-hidden border border-border">
         <button

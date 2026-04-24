@@ -8,9 +8,12 @@ import CompartirModal from './CompartirModal';
 import PlantillaSelector from './PlantillaSelector';
 import PlantillaEditor from './PlantillaEditor';
 import ResumenWidget from './ResumenWidget';
+import CardioForm from './cardio/CardioForm';
+import CardioList from './cardio/CardioList';
 import { useSesiones, useCompartidas, usePlantillas } from '../lib/store';
 import { fechaAString, obtenerDiasSemana } from '../lib/fechas';
 import type { Ejercicio, GrupoMuscular, Plantilla } from '../lib/types';
+import { useCardio } from '@/lib/hooks/useCardio';
 
 export default function EntrenamientosPage() {
   const [fechaActual, setFechaActual] = useState(new Date());
@@ -20,6 +23,7 @@ export default function EntrenamientosPage() {
   const [mostrarCompartir, setMostrarCompartir] = useState(false);
   const [mostrarPlantillas, setMostrarPlantillas] = useState(false);
   const [mostrarEditor, setMostrarEditor] = useState(false);
+  const [mostrarCardioForm, setMostrarCardioForm] = useState(false);
 
   const [confirmLimpiar, setConfirmLimpiar] = useState(false);
 
@@ -38,6 +42,7 @@ export default function EntrenamientosPage() {
   const { plantillas, agregarPlantilla, eliminarPlantilla } = usePlantillas();
 
   const { crearEnlace } = useCompartidas();
+  const { cardio, agregarCardio, eliminarCardio } = useCardio();
 
   const sesion = useMemo(
     () => obtenerSesionPorFecha(fechaActual),
@@ -139,6 +144,11 @@ export default function EntrenamientosPage() {
     setMostrarEditor(false);
     setMostrarPlantillas(true);
   };
+
+  const cardioDelDia = useMemo(() => {
+    const date = fechaAString(fechaActual);
+    return cardio.filter((c) => c.date === date);
+  }, [cardio, fechaActual]);
 
   if (!cargado) {
     return (
@@ -242,6 +252,29 @@ export default function EntrenamientosPage() {
               </button>
             )}
           </div>
+          <button
+            onClick={() => setMostrarCardioForm((prev) => !prev)}
+            className="w-full py-2.5 rounded-xl border border-cyan-500/40 text-sm font-medium text-cyan-600 hover:bg-cyan-500/10 transition-colors"
+          >
+            {mostrarCardioForm ? 'Cerrar cardio' : 'Agregar cardio'}
+          </button>
+
+          {mostrarCardioForm && (
+            <CardioForm
+              date={fechaAString(fechaActual)}
+              onCancelar={() => setMostrarCardioForm(false)}
+              onGuardar={async (payload) => {
+                await agregarCardio(payload);
+                setMostrarCardioForm(false);
+              }}
+            />
+          )}
+
+          <div className="space-y-2">
+            <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Cardio del dia</p>
+            <CardioList sessions={cardioDelDia} onDelete={eliminarCardio} />
+          </div>
+
           <button
             onClick={() => setMostrarPlantillas(true)}
             className="w-full py-2.5 rounded-xl border-2 border-dashed border-primary/30 text-sm font-medium text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
