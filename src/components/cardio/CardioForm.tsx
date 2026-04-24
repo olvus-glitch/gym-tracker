@@ -48,15 +48,24 @@ export default function CardioForm({ date, onGuardar, onCancelar }: Props) {
           <option value="bici">Bici</option>
           <option value="hiit">HIIT</option>
           <option value="remo">Remo</option>
-          <option value="eliptica">Eliptica</option>
+          <option value="eliptica">Elíptica</option>
           <option value="otro">Otro</option>
         </select>
-        <input value={machine} onChange={(e) => setMachine(e.target.value)} placeholder="Maquina (opcional)" className="px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" />
+        <input value={machine} onChange={(e) => setMachine(e.target.value)} placeholder="Máquina (opcional)" className="px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" />
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <input type="number" min="1" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Min" className="px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
-        <input type="number" min="0" step="0.01" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Km" className="px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
-        <input type="number" min="0" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="Kcal" className="px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
+        <div>
+          <label className="block text-[11px] text-text-muted mb-1">Tiempo (min)</label>
+          <input type="number" min="1" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Min" className="w-full px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
+        </div>
+        <div>
+          <label className="block text-[11px] text-text-muted mb-1">Distancia (km)</label>
+          <input type="number" min="0" step="0.01" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Km" className="w-full px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
+        </div>
+        <div>
+          <label className="block text-[11px] text-text-muted mb-1">Calorías (kcal)</label>
+          <input type="number" min="0" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="Kcal" className="w-full px-3 py-2 rounded-lg border border-border bg-input-bg text-sm" required />
+        </div>
       </div>
       <div className="flex gap-2">
         {(['baja', 'media', 'alta'] as CardioIntensity[]).map((i) => (

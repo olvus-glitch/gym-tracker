@@ -10,7 +10,7 @@ export default function WeeklyDashboardCards({ volumen, cardioMin, suenoProm, pe
     <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
       <Card title="Volumen" value={`${volumen}`} sub="kg*reps" />
       <Card title="Cardio" value={`${cardioMin}`} sub="min/semana" />
-      <Card title="Sueno" value={`${suenoProm.toFixed(1)}`} sub="h promedio" />
+      <Card title="Sueño" value={`${suenoProm.toFixed(1)}`} sub="h promedio" />
       <Card title="Peso" value={pesoActual ? `${pesoActual}` : '-'} sub="kg actual" />
     </div>
   );
